@@ -279,6 +279,59 @@ function HomePage() {
         </div>
       </section>
 
+      {/* New party-to-party deal promotion section */}
+      <section className="py-20 lg:py-28">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 lg:grid-cols-2 lg:px-8">
+          <Reveal>
+            <div className="rounded-3xl border border-primary/20 bg-card/80 p-8 shadow-lg">
+              <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-primary sm:text-xs">
+                Party-to-Party Deal
+              </p>
+              <div className="mt-6 rounded-2xl border border-primary/25 bg-background/40 p-5">
+                <p className="text-lg font-black leading-relaxed text-foreground sm:text-xl">
+                  🏡 CRYSTAL MODEL TOWN-1 — BUNGALOWS FOR SALE 🏡
+                </p>
+                <p className="mt-4 text-sm font-semibold leading-relaxed text-primary sm:text-base">
+                  ✨ Apna khubsurat ghar ab sirf khwab nahi!
+                </p>
+                <p className="mt-4 text-sm font-bold leading-relaxed text-foreground sm:text-base">
+                  💰 Easy Installments par Bungalows Available
+                </p>
+                <p className="mt-2 text-sm font-bold leading-relaxed text-foreground sm:text-base">
+                  📍 Prime Location – Crystal Model Town-1, Sukkur
+                </p>
+                <p className="mt-2 text-sm font-bold leading-relaxed text-foreground sm:text-base">
+                  🏠 Family living ke liye behtareen mauqa
+                </p>
+                <p className="mt-4 text-sm font-black leading-relaxed text-primary sm:text-base">
+                  🔥 Limited Opportunity — Aaj hi booking / details ke liye rabta karein!
+                </p>
+                <p className="mt-4 text-sm font-black leading-relaxed text-foreground sm:text-base">
+                  ZAIN REAL ESTATE
+                </p>
+                <p className="mt-2 text-sm font-black leading-relaxed text-primary sm:text-base">
+                  📞 0313-5974923
+                </p>
+                <p className="mt-4 text-sm font-bold leading-relaxed text-muted-foreground sm:text-base">
+                  Bharose ke saath property deal — Zain Real Estate
+                </p>
+              </div>
+              <a
+                href={site.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-shake sheen-on-hover mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-7 py-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary-foreground transition-colors hover:bg-accent"
+              >
+                WhatsApp {site.phone}
+              </a>
+            </div>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <VideoPlayer src="/homes/homeVideo1.mp4" poster={img.luxuryVilla} className="rounded-3xl" />
+          </Reveal>
+        </div>
+      </section>
 
       {/* Services */}
       <section className="py-20 lg:py-28">
