@@ -17,7 +17,7 @@ import { createProject, updateProject } from '@/lib/api.server'
 import type { Listing } from '@/lib/supabase'
 import { X, Plus, AlertTriangle } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
-import { isSupabaseConfigured } from '@/lib/supabase'
+import { isSupabaseConfigured, uploadProjectImage, uploadProjectImages } from '@/lib/supabase'
 
 interface AdminProjectFormProps {
   project?: Listing
@@ -32,6 +32,8 @@ export function AdminProjectForm({ project }: AdminProjectFormProps) {
   const [features, setFeatures] = useState<string[]>(project?.features || [])
   const [featuresUrdu, setFeaturesUrdu] = useState<string[]>(project?.featuresUrdu || [])
   const [gallery, setGallery] = useState<string[]>(project?.gallery || [])
+  const [mainImageFile, setMainImageFile] = useState<File | null>(null)
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([])
   const [featureInput, setFeatureInput] = useState('')
   const [featureUrduInput, setFeatureUrduInput] = useState('')
   const [galleryInput, setGalleryInput] = useState('')
@@ -53,24 +55,57 @@ export function AdminProjectForm({ project }: AdminProjectFormProps) {
     setIsLoading(true)
     setError('')
 
+    console.log('[AdminProjectForm] onSubmit started', {
+      mode: project?.id ? 'update' : 'create',
+      slug: data.slug,
+      title: data.title,
+      type,
+      purpose,
+      featureCount: features.length,
+      galleryCount: gallery.length,
+      isConfigured,
+    })
+
     try {
+      let finalImage = data.image || ''
+      let finalGallery = [...gallery]
+
+      if (mainImageFile) {
+        console.log('[AdminProjectForm] uploading main image from local file:', mainImageFile.name)
+        finalImage = await uploadProjectImage(mainImageFile)
+      }
+
+      if (galleryFiles.length > 0) {
+        console.log('[AdminProjectForm] uploading gallery images from local files:', galleryFiles.length)
+        const uploadedGalleryUrls = await uploadProjectImages(galleryFiles)
+        finalGallery = [...finalGallery, ...uploadedGalleryUrls]
+      }
+
       const projectData = {
         ...data,
+        image: finalImage,
+        gallery: finalGallery,
         type,
         purpose,
         features,
         featuresUrdu,
-        gallery,
       }
 
+      console.log('[AdminProjectForm] payload ready for server function:', projectData)
+
       if (project?.id) {
-        await updateProject(project.id, projectData)
+        console.log('[AdminProjectForm] calling updateProject()', { id: project.id })
+        const result = await updateProject({ data: { id: project.id, project: projectData } })
+        console.log('[AdminProjectForm] updateProject() resolved:', result)
       } else {
-        await createProject(projectData)
+        console.log('[AdminProjectForm] calling createProject() async server function with data envelope')
+        const result = await createProject({ data: projectData })
+        console.log('[AdminProjectForm] createProject() resolved:', result)
       }
 
       navigate({ to: '/admin' })
     } catch (err) {
+      console.error('[AdminProjectForm] submit/create update failed:', err)
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsLoading(false)
@@ -214,12 +249,17 @@ export function AdminProjectForm({ project }: AdminProjectFormProps) {
             <div className="space-y-4 border-b pb-6">
               <h3 className="font-semibold">Images</h3>
 
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="image">Main Image URL</Label>
                 <Input
                   id="image"
                   placeholder="https://example.com/image.jpg"
                   {...register('image', { required: 'Main image is required' })}
+                />
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setMainImageFile(e.target.files?.[0] ?? null)}
                 />
               </div>
 
@@ -236,6 +276,15 @@ export function AdminProjectForm({ project }: AdminProjectFormProps) {
                     <Button type="button" onClick={addGallery} size="sm">
                       <Plus className="w-4 h-4" />
                     </Button>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => setGalleryFiles(Array.from(e.target.files ?? []))}
+                    />
                   </div>
 
                   {gallery.length > 0 && (

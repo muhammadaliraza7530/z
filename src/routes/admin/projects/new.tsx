@@ -12,10 +12,15 @@ function NewProjectPage() {
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
-    setIsAuthenticated(!!token)
+    const hasToken = !!token
+    console.log('[NewProjectPage] auth token check:', hasToken)
+    setIsAuthenticated(hasToken)
   }, [])
 
+  console.log('[NewProjectPage] render:', { isAuthenticated })
+
   if (!isAuthenticated) {
+    console.log('[NewProjectPage] showing AdminLogin gate')
     return <AdminLogin onLogin={() => setIsAuthenticated(true)} />
   }
 

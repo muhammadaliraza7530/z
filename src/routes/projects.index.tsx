@@ -30,10 +30,15 @@ const purposeStyle: Record<string, string> = {
 };
 
 function ProjectsPageContent() {
-  const { data: listings = [] } = useSuspenseQuery({
+  const { data: listings } = useSuspenseQuery({
     queryKey: ["projects"],
-    queryFn: async () => await fetchProjects(),
+    queryFn: async () => {
+      const result = await fetchProjects();
+      return Array.isArray(result) ? result : [];
+    },
   });
+
+  const safeListings = Array.isArray(listings) ? listings : [];
 
   return (
     <>
@@ -46,49 +51,49 @@ function ProjectsPageContent() {
 
       <section className="py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          {listings.length === 0 ? (
+          {safeListings.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground">No properties available at the moment.</p>
             </div>
           ) : (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {listings.map((l, i) => (
-              <Reveal key={l.slug} delay={(i % 3) * 90}>
-                <Link
-                  to="/projects/$slug"
-                  params={{ slug: l.slug }}
-                  className="group block overflow-hidden rounded-3xl border border-border bg-card/60 transition-colors hover:border-primary/50"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <img
-                      src={l.image}
-                      alt={l.title}
-                      loading="lazy"
-                      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <span
-                      className={`absolute left-4 top-4 rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] ${purposeStyle[l.purpose]}`}
-                    >
-                      For {l.purpose}
-                    </span>
-                  </div>
-                  <div className="p-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">{l.type}</p>
-                    <h2 className="mt-2 text-lg font-bold leading-snug">{l.title}</h2>
-                    <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
-                      <MapPin className="size-4 shrink-0 text-primary/70" />
-                      {l.location}
-                    </p>
-                    <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                      <span className="text-sm font-semibold">{l.area}</span>
-                      <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.12em] text-primary">
-                        Details <ArrowRight className="size-3.5" />
+              {safeListings.map((l, i) => (
+                <Reveal key={l.slug} delay={(i % 3) * 90}>
+                  <Link
+                    to="/projects/$slug"
+                    params={{ slug: l.slug }}
+                    className="group block overflow-hidden rounded-3xl border border-border bg-card/60 transition-colors hover:border-primary/50"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <img
+                        src={l.image}
+                        alt={l.title}
+                        loading="lazy"
+                        className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <span
+                        className={`absolute left-4 top-4 rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] ${purposeStyle[l.purpose]}`}
+                      >
+                        For {l.purpose}
                       </span>
                     </div>
-                  </div>
-                </Link>
-              </Reveal>
-            ))}
+                    <div className="p-6">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">{l.type}</p>
+                      <h2 className="mt-2 text-lg font-bold leading-snug">{l.title}</h2>
+                      <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <MapPin className="size-4 shrink-0 text-primary/70" />
+                        {l.location}
+                      </p>
+                      <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+                        <span className="text-sm font-semibold">{l.area}</span>
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.12em] text-primary">
+                          Details <ArrowRight className="size-3.5" />
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </Reveal>
+              ))}
             </div>
           )}
 

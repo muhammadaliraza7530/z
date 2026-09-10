@@ -26,7 +26,7 @@ function EditProjectPage() {
 
     const loadProject = async () => {
       try {
-        const data = await getProjectBySlug(id)
+        const data = await getProjectBySlug({ data: { slug: id } })
         if (!data) {
           setError('Project not found')
         } else {

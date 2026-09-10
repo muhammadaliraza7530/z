@@ -7,7 +7,7 @@ import { getProjectBySlugFn } from "./-projects.server";
 
 export const Route = createFileRoute("/projects/$slug")({
   loader: async ({ params }) => {
-    const listing = await getProjectBySlugFn(params.slug);
+    const listing = await getProjectBySlugFn({ data: { slug: params.slug } });
     if (!listing) throw notFound();
     return listing;
   },

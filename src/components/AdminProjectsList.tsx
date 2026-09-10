@@ -27,18 +27,15 @@ import { isSupabaseConfigured } from '@/lib/supabase'
 export function AdminProjectsList() {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const isConfigured = isSupabaseConfigured()
-  
+
   const { data: projectsData, refetch, isError, error } = useSuspenseQuery({
     queryKey: ['projects'],
     queryFn: async () => {
       try {
+        console.log('[AdminProjectsList] invoking fetchProjects() directly')
         const result = await fetchProjects()
         console.log('DEBUG: fetchProjects returned:', result, 'type:', Array.isArray(result) ? 'array' : typeof result)
-        if (!Array.isArray(result)) {
-          console.error('ERROR: fetchProjects did not return an array!')
-          return []
-        }
-        return result
+        return Array.isArray(result) ? result : []
       } catch (err) {
         console.error('ERROR calling fetchProjects:', err)
         throw err
@@ -46,7 +43,6 @@ export function AdminProjectsList() {
     },
   })
 
-  // Ensure projects is always an array
   const projects = Array.isArray(projectsData) ? projectsData : []
   
   if (isError) {
@@ -55,7 +51,7 @@ export function AdminProjectsList() {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteProject(id)
+      await deleteProject({ data: { id } })
       setDeleteId(null)
       refetch()
     } catch (error) {
