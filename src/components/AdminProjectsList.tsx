@@ -88,10 +88,13 @@ export function AdminProjectsList() {
       </div>
 
       {projects.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">No projects yet</p>
+        <div className="rounded-xl border border-dashed border-border bg-card/30 px-6 py-14 text-center">
+          <p className="text-lg font-semibold">No database projects yet</p>
+          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+            Your hardcoded properties are still visible on the public Properties page. Add a project here to manage it from this panel.
+          </p>
           <Link to="/admin/projects/new">
-            <Button disabled={!isConfigured}>Create First Project</Button>
+            <Button className="mt-6" disabled={!isConfigured}>Create First Project</Button>
           </Link>
         </div>
       ) : (
