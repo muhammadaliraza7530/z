@@ -26,6 +26,7 @@ import { isSupabaseConfigured } from '@/lib/supabase'
 
 export function AdminProjectsList() {
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [actionError, setActionError] = useState('')
   const isConfigured = isSupabaseConfigured()
 
   const { data: projectsData, refetch, isError, error } = useSuspenseQuery({
@@ -43,19 +44,21 @@ export function AdminProjectsList() {
     },
   })
 
-  const projects = Array.isArray(projectsData) ? projectsData : []
+  const projects = Array.isArray(projectsData) ? projectsData.filter((project) => project.id) : []
   
   if (isError) {
     console.error('Query error:', error)
   }
 
   const handleDelete = async (id: string) => {
+    setActionError('')
     try {
       await deleteProject({ data: { id } })
       setDeleteId(null)
       refetch()
     } catch (error) {
       console.error('Failed to delete project:', error)
+      setActionError(error instanceof Error ? error.message : 'Failed to delete project')
     }
   }
 
@@ -67,6 +70,11 @@ export function AdminProjectsList() {
           <AlertDescription>
             Supabase is not configured. You're viewing default projects. Set up Supabase to make changes. See ADMIN_SETUP.md for instructions.
           </AlertDescription>
+        </Alert>
+      )}
+      {actionError && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertDescription>{actionError}</AlertDescription>
         </Alert>
       )}
       <div className="flex justify-between items-center mb-6">

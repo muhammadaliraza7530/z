@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { AdminProjectForm } from '@/components/AdminProjectForm'
 import { useEffect, useState } from 'react'
 import { AdminLogin } from '@/components/AdminLogin'
-import { getProjectBySlug } from '@/lib/api.server'
+import { getProjectById } from '@/lib/api.server'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export const Route = createFileRoute('/admin/projects/$id')({
@@ -26,7 +26,7 @@ function EditProjectPage() {
 
     const loadProject = async () => {
       try {
-        const data = await getProjectBySlug({ data: { slug: id } })
+        const data = await getProjectById({ data: { id } })
         if (!data) {
           setError('Project not found')
         } else {

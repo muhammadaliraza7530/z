@@ -97,6 +97,9 @@ export function AdminProjectForm({ project }: AdminProjectFormProps) {
         console.log('[AdminProjectForm] calling updateProject()', { id: project.id })
         const result = await updateProject({ data: { id: project.id, project: projectData } })
         console.log('[AdminProjectForm] updateProject() resolved:', result)
+        if (!result) {
+          throw new Error('Project update did not affect a database record.')
+        }
       } else {
         console.log('[AdminProjectForm] calling createProject() async server function with data envelope')
         const result = await createProject({ data: projectData })
