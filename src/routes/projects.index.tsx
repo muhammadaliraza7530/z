@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, MapPin } from "lucide-react";
-import { img, listings, site } from "@/lib/site-data";
+import { img, site } from "@/lib/site-data";
 import { CtaBand, PageHero } from "@/components/PageBits";
 import { Reveal } from "@/components/ui-bits";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { fetchProjects } from "./-projects.server";
+import { Suspense } from "react";
 
 export const Route = createFileRoute("/projects/")({
   head: () => ({
@@ -26,7 +29,12 @@ const purposeStyle: Record<string, string> = {
   Booking: "bg-emerald-600 text-white",
 };
 
-function ProjectsPage() {
+function ProjectsPageContent() {
+  const { data: listings = [] } = useSuspenseQuery({
+    queryKey: ["projects"],
+    queryFn: async () => await fetchProjects(),
+  });
+
   return (
     <>
       <PageHero
@@ -38,8 +46,13 @@ function ProjectsPage() {
 
       <section className="py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {listings.map((l, i) => (
+          {listings.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No properties available at the moment.</p>
+            </div>
+          ) : (
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {listings.map((l, i) => (
               <Reveal key={l.slug} delay={(i % 3) * 90}>
                 <Link
                   to="/projects/$slug"
@@ -76,7 +89,8 @@ function ProjectsPage() {
                 </Link>
               </Reveal>
             ))}
-          </div>
+            </div>
+          )}
 
           <Reveal className="mt-16 text-center">
             <p className="text-sm text-muted-foreground">
@@ -95,5 +109,13 @@ function ProjectsPage() {
         body="Tell us the area, property type and budget — we will shortlist verified options in Sukkur."
       />
     </>
+  );
+}
+
+function ProjectsPage() {
+  return (
+    <Suspense fallback={<div className="py-20 text-center">Loading properties...</div>}>
+      <ProjectsPageContent />
+    </Suspense>
   );
 }

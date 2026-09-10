@@ -1,12 +1,13 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Check, MapPin, MessageCircle, Phone } from "lucide-react";
-import { listings, site } from "@/lib/site-data";
+import { site } from "@/lib/site-data";
 import { CtaBand } from "@/components/PageBits";
 import { Reveal } from "@/components/ui-bits";
+import { getProjectBySlugFn } from "./-projects.server";
 
 export const Route = createFileRoute("/projects/$slug")({
-  loader: ({ params }) => {
-    const listing = listings.find((l) => l.slug === params.slug);
+  loader: async ({ params }) => {
+    const listing = await getProjectBySlugFn(params.slug);
     if (!listing) throw notFound();
     return listing;
   },
