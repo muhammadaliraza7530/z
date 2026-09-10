@@ -28,9 +28,12 @@ function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="max-w-7xl mx-auto px-5 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Zain Admin Panel</h1>
+      <header className="border-b bg-card/40">
+        <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Zain Real Estate</p>
+            <h1 className="mt-1 text-xl font-bold sm:text-2xl">Admin Panel</h1>
+          </div>
           <Button variant="outline" onClick={handleLogout}>
             <LogOut className="w-4 h-4 mr-2" />
             Logout
@@ -38,7 +41,7 @@ function AdminDashboard() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-5 lg:px-8 py-8">
+      <main className="mx-auto w-full max-w-7xl px-5 py-8 lg:px-8">
         <Suspense fallback={<div>Loading...</div>}>
           <AdminProjectsList />
         </Suspense>
